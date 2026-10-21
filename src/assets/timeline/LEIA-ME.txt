@@ -1,0 +1,10 @@
+﻿AS PASTAS DOS CARDS MUDARAM DE LUGAR
+====================================
+
+Coloque as fotos em:
+
+  public\timeline\<pasta-do-card>\
+
+NÃO use mais: src\assets\timeline\
+
+O site lê public\timeline a cada 2 segundos e atualiza sozinho.

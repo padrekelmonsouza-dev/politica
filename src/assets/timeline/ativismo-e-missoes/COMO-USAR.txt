@@ -1,0 +1,10 @@
+﻿PASTA DO CARD: ativismo-e-missoes
+================
+Coloque aqui as fotos deste card (jpg, jpeg, png ou webp).
+
+- A 1ª foto (ordem do nome do arquivo) vira a prévia do card.
+- Preferência de tamanho da prévia no site: 300 x 150 pixels.
+- Depois de colocar as fotos, salve e atualize o site (Ctrl+F5).
+
+Caminho completo:
+src\assets\timeline\ativismo-e-missoes
