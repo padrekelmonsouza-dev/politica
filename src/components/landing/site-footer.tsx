@@ -54,7 +54,7 @@ export function SiteFooter() {
     <footer
       id="rodape"
       data-cnpj-on-dark
-      className="relative overflow-hidden pb-[env(safe-area-inset-bottom,0px)] text-white"
+      className="relative overflow-hidden pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] text-white lg:pb-[env(safe-area-inset-bottom,0px)]"
       style={{ background: "var(--gradient-hero)" }}
     >
       <div
