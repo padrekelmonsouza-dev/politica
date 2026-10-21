@@ -192,7 +192,20 @@ export function SiteFooter() {
           <p>
             © {new Date().getFullYear()} Campanha {CANDIDATE.name}. Todos os direitos reservados.
           </p>
-          <p>Conteúdo informativo de campanha, a partir de fontes públicas.</p>
+          <div className="flex flex-col items-center gap-1 lg:flex-row lg:gap-4">
+            <p>Conteúdo informativo de campanha, a partir de fontes públicas.</p>
+            <p>
+              Desenvolvido por{" "}
+              <a
+                href="https://mktcenter.com.br/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-white/85 underline-offset-2 hover:text-white hover:underline"
+              >
+                Mktcenter Digital
+              </a>
+            </p>
+          </div>
         </PageShell>
       </div>
     </footer>
