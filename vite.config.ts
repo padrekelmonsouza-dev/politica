@@ -124,6 +124,8 @@ export default defineConfig(async ({ command, mode }) => {
     server: {
       host: "::",
       port: 8080,
+      // Saídas de build têm mídias grandes; vigiá-las derruba o dev server no Windows (EBUSY).
+      watch: { ignored: ["**/.output/**", "**/dist/**"] },
     },
     resolve: {
       alias: {
