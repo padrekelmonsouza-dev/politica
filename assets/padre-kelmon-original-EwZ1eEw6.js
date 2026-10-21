@@ -1,0 +1,1 @@
+var e=`/assets/padre-kelmon-original-BhcvvwxD.jpg`;export{e as t};

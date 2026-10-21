@@ -1,0 +1,54 @@
+# Hospedagem PHP/HTML (Hostinger) do build estático — `npm run build:static`.
+# Substitui o que o servidor Node fazia: redirects, URLs sem barra e cache.
+
+Options -Indexes
+DirectorySlash Off
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  RewriteCond %{HTTP_HOST} ^www\.padrekelmon\.com\.br$ [NC]
+  RewriteRule ^(.*)$ https://padrekelmon.com.br/$1 [R=301,L]
+
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+  RewriteRule ^bio/?$ /links [R=301,L]
+  RewriteRule ^biografia/?$ /sobre [R=301,L]
+  RewriteRule ^redes-sociais/?$ /links [R=301,L]
+
+  # /sobre e /sobre/ servem /sobre/index.html (páginas pré-renderizadas)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{DOCUMENT_ROOT}/$1/index.html -f
+  RewriteRule ^(.+?)/?$ /$1/index.html [L]
+</IfModule>
+
+# Rota inexistente: o roteador do app mostra a página "não encontrada".
+ErrorDocument 404 /index.html
+
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+  AddType application/javascript .js .mjs
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+
+  <FilesMatch "\.(html|json|webmanifest)$|^sw\.js$|^cola-sw\.js$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+  </FilesMatch>
+  <FilesMatch "\.(webp|jpe?g|png|ico|svg|mp4|pdf)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+</IfModule>

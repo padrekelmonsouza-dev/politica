@@ -1,0 +1,11 @@
+ONDE COLOCAR AS FOTOS
+=====================
+
+Pode colocar em QUALQUER uma destas pastas (as duas funcionam):
+
+1) public\timeline\ordenacao-diaconal\     ← preferencial
+2) src\assets\timeline\ordenacao-diaconal\
+
+O site atualiza sozinho em ~2 segundos.
+
+Card 4 = Ordenação Diaconal → pasta ordenacao-diaconal
