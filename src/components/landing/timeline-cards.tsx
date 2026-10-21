@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { serverData } from "@/lib/static-site";
 import { getTimelinePhotos } from "@/lib/timeline-photos";
 
 /** Atualiza a lista ao adicionar/remover arquivos em public/timeline. */
@@ -413,7 +414,7 @@ function TimelineCard({
 export function TimelineCards() {
   const photosQuery = useQuery({
     queryKey: ["timeline-photos", "live-public-folder-v2"],
-    queryFn: () => getTimelinePhotos(),
+    queryFn: () => serverData("timeline-photos", () => getTimelinePhotos()),
     staleTime: 0,
     gcTime: 0,
     refetchInterval: TIMELINE_REFRESH_MS,

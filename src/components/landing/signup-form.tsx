@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { submitContactForm } from "@/lib/contact-form";
+import { sendContactForm } from "@/lib/contact-form";
 import sobreImg from "@/assets/Sobre-Padre-Kelmon.webp";
 import { PageShell, Reveal } from "./primitives";
 
@@ -97,16 +97,14 @@ export function SignupForm() {
     setErrors({});
     setLoading(true);
     try {
-      await submitContactForm({
-        data: {
-          nome: parsed.data.nome,
-          telefone: parsed.data.telefone,
-          email: parsed.data.email,
-          cidade: parsed.data.cidade,
-          estado: parsed.data.estado,
-          voluntario,
-          novidades,
-        },
+      await sendContactForm({
+        nome: parsed.data.nome,
+        telefone: parsed.data.telefone,
+        email: parsed.data.email,
+        cidade: parsed.data.cidade,
+        estado: parsed.data.estado,
+        voluntario,
+        novidades,
       });
       toast.success("Cadastro enviado! Em breve entraremos em contato.");
       formEl.reset();

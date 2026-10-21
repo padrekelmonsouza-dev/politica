@@ -9,6 +9,8 @@
     "prebuild": "node scripts/generate-seo-files.mjs",
     "dev": "vite dev",
     "build": "vite build && node scripts/patch-nitro-runtime.mjs",
+    "build:static": "node scripts/generate-seo-files.mjs && node scripts/snapshot-server-data.mjs && vite build --mode static",
+    "deploy:hostinger": "npm run build:static && node scripts/deploy-hostinger.mjs",
     "build:dev": "vite build --mode development && node scripts/patch-nitro-runtime.mjs",
     "start": "node .output/server/index.mjs",
     "preview": "vite preview",

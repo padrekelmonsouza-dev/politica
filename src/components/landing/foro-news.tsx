@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import fotoPadreKelmonForo from "@/assets/banner-noticias-foro-padre-kelmon.jpg";
 import { FORO_ARTICLES } from "@/data/foro-articles";
 import { getForoFeeds } from "@/lib/foro-feeds";
+import { serverData } from "@/lib/static-site";
 import { rejectStateDeputyNews } from "@/lib/news-filters";
 import { PageShell, Reveal } from "./primitives";
 
@@ -18,7 +19,7 @@ export function ForoNews() {
 
   const foroQuery = useQuery({
     queryKey: ["foro-feeds", "v2-no-estadual-sp"],
-    queryFn: () => getForoFeeds(),
+    queryFn: () => serverData("foro-feeds", () => getForoFeeds()),
     staleTime: FORO_REFRESH_MS,
     refetchInterval: FORO_REFRESH_MS,
     refetchOnWindowFocus: true,

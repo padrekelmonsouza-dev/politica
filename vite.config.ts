@@ -1,11 +1,28 @@
+import { readFileSync } from "node:fs";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig, loadEnv } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 
+/** Rotas do sitemap gerado no prebuild — ponto de partida do prerender estático. */
+function sitemapPaths(): string[] {
+  try {
+    const xml = readFileSync(`${process.cwd()}/public/sitemap.xml`, "utf8");
+    const paths = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
+      ([, loc]) => new URL(loc ?? "/", "https://padrekelmon.com.br").pathname,
+    );
+    return [...new Set(["/", ...paths])];
+  } catch {
+    return ["/"];
+  }
+}
+
 export default defineConfig(async ({ command, mode }) => {
+  // `vite build --mode static`: HTML pré-renderizado para hospedagem PHP/HTML (sem Node).
+  const isStatic = mode === "static";
   const loadedEnv = loadEnv(mode, process.cwd(), "VITE_");
+  if (isStatic) loadedEnv["VITE_STATIC_SITE"] = "1";
   const envDefine: Record<string, string> = {};
   for (const [key, value] of Object.entries(loadedEnv)) {
     envDefine[`import.meta.env.${key}`] = JSON.stringify(value);
@@ -16,6 +33,17 @@ export default defineConfig(async ({ command, mode }) => {
     tsConfigPaths({ projects: ["./tsconfig.json"] }),
     tanstackStart({
       server: { entry: "server" },
+      ...(isStatic && {
+        prerender: {
+          enabled: true,
+          crawlLinks: true,
+          autoSubfolderIndex: true,
+          failOnError: false,
+          // O crawler salva a resposta como texto: arquivos binários (png, mp4) sairiam corrompidos.
+          filter: ({ path }: { path: string }) => !path.includes("#") && !/\.\w+$/.test(path),
+        },
+        pages: sitemapPaths().map((path) => ({ path })),
+      }),
       importProtection: {
         behavior: "error",
         client: {
@@ -26,7 +54,7 @@ export default defineConfig(async ({ command, mode }) => {
     }),
   ];
 
-  if (command === "build") {
+  if (command === "build" && !isStatic) {
     const { nitro } = await import("nitro/vite");
     plugins.push(
       nitro({

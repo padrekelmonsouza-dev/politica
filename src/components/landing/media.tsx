@@ -18,6 +18,7 @@ import { rejectStateDeputyNews } from "@/lib/news-filters";
 import { getPressFeeds } from "@/lib/press-feeds";
 import { getVv8Feeds } from "@/lib/vv8-feeds";
 import { getSocialFeeds, type SocialNetworkId, type SocialPost } from "@/lib/social-feeds";
+import { serverData } from "@/lib/static-site";
 import { SeteSetembroArticleModal } from "@/components/landing/sete-setembro-article-modal";
 
 const MEDIA_REFRESH_MS = 30 * 1000;
@@ -589,7 +590,7 @@ export function Media({ headingAs = "h2" }: { headingAs?: "h1" | "h2" }) {
 
   const socialQuery = useQuery({
     queryKey: ["social-feeds", "v19-youtube-seed"],
-    queryFn: () => getSocialFeeds(),
+    queryFn: () => serverData("social-feeds", () => getSocialFeeds()),
     staleTime: MEDIA_REFRESH_MS,
     refetchInterval: MEDIA_REFRESH_MS,
     refetchOnWindowFocus: true,
@@ -599,7 +600,7 @@ export function Media({ headingAs = "h2" }: { headingAs?: "h1" | "h2" }) {
 
   const pressQuery = useQuery({
     queryKey: ["press-feeds", "v4-no-estadual-sp"],
-    queryFn: () => getPressFeeds(),
+    queryFn: () => serverData("press-feeds", () => getPressFeeds()),
     staleTime: MEDIA_REFRESH_MS,
     refetchInterval: MEDIA_REFRESH_MS,
     refetchOnWindowFocus: true,
@@ -608,7 +609,7 @@ export function Media({ headingAs = "h2" }: { headingAs?: "h1" | "h2" }) {
 
   const vv8Query = useQuery({
     queryKey: ["vv8-feeds", "v3-no-estadual-sp"],
-    queryFn: () => getVv8Feeds(),
+    queryFn: () => serverData("vv8-feeds", () => getVv8Feeds()),
     staleTime: MEDIA_REFRESH_MS,
     refetchInterval: MEDIA_REFRESH_MS,
     refetchOnWindowFocus: true,

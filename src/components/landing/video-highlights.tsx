@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { YOUTUBE_HIGHLIGHTS, YOUTUBE_PINNED_GRID_IDS, type YoutubeHighlight } from "@/data/youtube-highlights";
+import { serverData } from "@/lib/static-site";
 import { getYoutubeGridVideos } from "@/lib/youtube-grid";
 
 const FEATURED_WIDTH = 1080;
@@ -233,7 +234,7 @@ const YOUTUBE_REFRESH_MS = 60_000;
 export function VideoHighlights() {
   const youtubeQuery = useQuery({
     queryKey: ["youtube-grid", "live-uploads"],
-    queryFn: () => getYoutubeGridVideos(),
+    queryFn: () => serverData("youtube-grid", () => getYoutubeGridVideos()),
     staleTime: YOUTUBE_REFRESH_MS,
     refetchInterval: YOUTUBE_REFRESH_MS,
     refetchOnWindowFocus: true,

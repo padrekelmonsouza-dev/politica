@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { PARTIDO_LIBERAL } from "@/lib/campaign-data";
 import { rejectStateDeputyNews } from "@/lib/news-filters";
 import { getPlFeeds } from "@/lib/pl-feeds";
+import { serverData } from "@/lib/static-site";
 import { PageShell, Reveal } from "./primitives";
 
 const VALUE_ICONS = [Church, Flag, Heart, ShieldCheck] as const;
@@ -28,7 +29,7 @@ export function PartidoLiberal() {
 
   const plQuery = useQuery({
     queryKey: ["pl-feeds", "v2-no-estadual-sp"],
-    queryFn: () => getPlFeeds(),
+    queryFn: () => serverData("pl-feeds", () => getPlFeeds()),
     staleTime: PL_REFRESH_MS,
     refetchInterval: PL_REFRESH_MS,
     refetchOnWindowFocus: true,

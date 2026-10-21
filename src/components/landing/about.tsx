@@ -8,6 +8,7 @@ import sobreRotating1 from "@/assets/sobre-rotating-1.webp";
 import sobreRotating2 from "@/assets/sobre-rotating-2.webp";
 import sobreRotating3 from "@/assets/sobre-rotating-3.webp";
 import { Button } from "@/components/ui/button";
+import { serverData } from "@/lib/static-site";
 import { getTimelinePhotos } from "@/lib/timeline-photos";
 import { PageShell } from "./primitives";
 import { TIMELINE_CARD_META, TimelineCards } from "./timeline-cards";
@@ -99,7 +100,7 @@ function pickHistoriaSlides(
 function HistoriaImagensCarousel() {
   const photosQuery = useQuery({
     queryKey: ["timeline-photos", "live-public-folder-v2"],
-    queryFn: () => getTimelinePhotos(),
+    queryFn: () => serverData("timeline-photos", () => getTimelinePhotos()),
     staleTime: 30_000,
     refetchOnWindowFocus: false,
   });

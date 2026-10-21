@@ -22,6 +22,7 @@ import chapaCardImg from "@/assets/chapa-card-padre-kelmon.jpg";
 import type { CetRegion } from "@/lib/cet-traffic";
 import { getLocalNow, type LocalNowResult } from "@/lib/local-now";
 import { getMarketFuel, type FuelPrices, type MarketQuote } from "@/lib/market-fuel";
+import { serverData } from "@/lib/static-site";
 import { cn } from "@/lib/utils";
 
 const SP_LAT = -23.5505;
@@ -462,7 +463,8 @@ export function HeroServiceCards({
 }) {
   const localQuery = useQuery({
     queryKey: ["local-now", "sao-paulo"],
-    queryFn: () => getLocalNow({ data: { lat: SP_LAT, lon: SP_LON } }),
+    queryFn: () =>
+      serverData("local-now", () => getLocalNow({ data: { lat: SP_LAT, lon: SP_LON } })),
     staleTime: LOCAL_REFRESH_MS,
     refetchInterval: LOCAL_REFRESH_MS,
     refetchOnWindowFocus: true,
@@ -471,7 +473,7 @@ export function HeroServiceCards({
 
   const marketQuery = useQuery({
     queryKey: ["market-fuel"],
-    queryFn: () => getMarketFuel(),
+    queryFn: () => serverData("market-fuel", () => getMarketFuel()),
     staleTime: LOCAL_REFRESH_MS,
     refetchInterval: LOCAL_REFRESH_MS,
     refetchOnWindowFocus: true,

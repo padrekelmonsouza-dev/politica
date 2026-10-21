@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { IS_STATIC_SITE } from "@/lib/static-site";
 
 const CONTACT_TO = "padrekelmonmare.luis@gmail.com";
 const CONTACT_SUBJECT = "formulario do site";
@@ -16,50 +17,58 @@ const contactSchema = z.object({
 
 export type ContactFormInput = z.infer<typeof contactSchema>;
 
+async function sendToFormsubmit(data: ContactFormInput) {
+  const body = {
+    _subject: CONTACT_SUBJECT,
+    _template: "table",
+    _captcha: "false",
+    nome: data.nome,
+    telefone: data.telefone,
+    email: data.email,
+    cidade: data.cidade,
+    estado: data.estado,
+    voluntario: data.voluntario ? "Sim" : "Não",
+    novidades: data.novidades ? "Sim" : "Não",
+    _replyto: data.email,
+    message: [
+      `Nome: ${data.nome}`,
+      `Telefone: ${data.telefone}`,
+      `E-mail: ${data.email}`,
+      `Cidade: ${data.cidade}/${data.estado}`,
+      `Voluntário: ${data.voluntario ? "Sim" : "Não"}`,
+      `Novidades: ${data.novidades ? "Sim" : "Não"}`,
+    ].join("\n"),
+  };
+
+  const res = await fetch(`https://formsubmit.co/ajax/${CONTACT_TO}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(20000),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Falha ao enviar o formulário (${res.status}). ${text.slice(0, 120)}`);
+  }
+
+  const json = (await res.json().catch(() => null)) as { success?: string | boolean } | null;
+  if (json && json.success === false) {
+    throw new Error("Não foi possível enviar o formulário. Tente novamente.");
+  }
+
+  return { ok: true as const, to: CONTACT_TO, subject: CONTACT_SUBJECT };
+}
+
 export const submitContactForm = createServerFn({ method: "POST" })
   .validator((data: unknown) => contactSchema.parse(data))
-  .handler(async ({ data }) => {
-    const body = {
-      _subject: CONTACT_SUBJECT,
-      _template: "table",
-      _captcha: "false",
-      nome: data.nome,
-      telefone: data.telefone,
-      email: data.email,
-      cidade: data.cidade,
-      estado: data.estado,
-      voluntario: data.voluntario ? "Sim" : "Não",
-      novidades: data.novidades ? "Sim" : "Não",
-      _replyto: data.email,
-      message: [
-        `Nome: ${data.nome}`,
-        `Telefone: ${data.telefone}`,
-        `E-mail: ${data.email}`,
-        `Cidade: ${data.cidade}/${data.estado}`,
-        `Voluntário: ${data.voluntario ? "Sim" : "Não"}`,
-        `Novidades: ${data.novidades ? "Sim" : "Não"}`,
-      ].join("\n"),
-    };
+  .handler(async ({ data }) => sendToFormsubmit(data));
 
-    const res = await fetch(`https://formsubmit.co/ajax/${CONTACT_TO}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(20000),
-    });
-
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new Error(`Falha ao enviar o formulário (${res.status}). ${text.slice(0, 120)}`);
-    }
-
-    const json = (await res.json().catch(() => null)) as { success?: string | boolean } | null;
-    if (json && json.success === false) {
-      throw new Error("Não foi possível enviar o formulário. Tente novamente.");
-    }
-
-    return { ok: true as const, to: CONTACT_TO, subject: CONTACT_SUBJECT };
-  });
+/** No build estático não há servidor: o navegador envia direto ao formsubmit.co. */
+export function sendContactForm(data: ContactFormInput) {
+  if (IS_STATIC_SITE) return sendToFormsubmit(contactSchema.parse(data));
+  return submitContactForm({ data });
+}
